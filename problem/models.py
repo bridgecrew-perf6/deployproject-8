@@ -1,4 +1,8 @@
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
+from problem.tasks import notify_user
 
 
 class Created(models.Model):
@@ -39,4 +43,11 @@ class Reply(Created):
 
     class Meta:
         ordering = ("-created", )
+
+@receiver(post_save, sender=Problem)
+def notify_about_creation(sender, instance, created, **kwargs):
+    if created:
+        notify_user.delay(instance.author.email)  # переводит в фоновый режим
+
+
 

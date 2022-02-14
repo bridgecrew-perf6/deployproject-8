@@ -4,6 +4,9 @@ from .serializers import ProblemSerializer, ReplySerializer
 from .models import *
 from account.permissions import IsActive
 from .permissions import IsAuthorPermission
+from rest_framework import generics
+from .models import Image
+from .serializers import ImageSerializer
 
 class PermissionMixin:
     def get_permissions(self):
@@ -29,4 +32,12 @@ class ProblemViewSet(PermissionMixin ,ModelViewSet):
 class ReplyViewSet(PermissionMixin,ModelViewSet):
     queryset = Reply.objects.all()
     serializer_class = ReplySerializer
+
+
+class ProblemImageView(generics.ListCreateAPIView):
+    queryset = Image.objects.all()
+    serializer_class = ImageSerializer
+
+    def get_serializer_context(self):  # переопределямем контекст.
+        return {"request": self.request}
 

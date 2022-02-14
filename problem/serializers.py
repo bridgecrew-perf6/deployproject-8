@@ -8,6 +8,21 @@ class ImageSerializer(serializers.ModelSerializer):
         model = Image
         fields = ("image",)
 
+    def _get_image_url(self, obj):  # obj - объект картинки(PostImage)  # функция чтобы ссылки на картинки работали.
+        if obj.image:
+            url = obj.image.url
+            request = self.context.get("request") # чтобы получить запрос в сериализаторах нужен контекст.
+            if request is not None:             # чтобы получить request, нужно написать его во views.py
+                url = request.build_absolute_uri(url)
+        else:
+            url = ""
+        return url
+
+    def to_representation(self, instance):  # instance объект PostImage
+        representation = super().to_representation(instance)
+        representation["image"] = self._get_image_url(instance)
+        return representation
+
 
 class ProblemSerializer(serializers.ModelSerializer):
     author = serializers.ReadOnlyField(source="author.email")
@@ -57,9 +72,7 @@ class ReplySerializer(serializers.ModelSerializer):
         )
         return reply
 
-#TODO: Комментарии и сериализаторы
-#TODO: Добавить PermissionMixin в problem.views
-#TODO: Закончить email.html, добавить активационную ссылку
+
 #TODO: Swagger
 #TODO: Celery
 #TODO: Model Signals

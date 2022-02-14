@@ -5,3 +5,6 @@ psycopg2-binary
 django-filter
 Pillow
 djangorestframework-simplejwt
+celery
+redis
+python-decouple
